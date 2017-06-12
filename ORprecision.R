@@ -45,7 +45,7 @@ iter <- 250
 diffs <- seq(0,.90,by=.01)
 sim1 <- list()
 
-n <- 3000
+n <- 300
 cacoRatio <- 2
 pCases <- .95
 set.seed(8675309)
@@ -60,12 +60,15 @@ for (k in 1:length(diffs)) {
    }
 }
 
-
 sim1dat <- data.frame(OR=unlist(lapply(sim1, function(x) mean(x$OR))),
                       lower=unlist(lapply(sim1, function(x) mean(x$lower))),
                       upper=unlist(lapply(sim1, function(x) mean(x$upper))),
                       ps=unlist(lapply(sim1, function(x) mean(x$p))),
                       diffs=diffs)
+sim1dat$upper[which(is.infinite(sim1dat$upper))] <- 1e10
+sim1dat$upper[which(is.na(sim1dat$upper))] <- 1e10
+sim1dat$upper[which(sim1dat$upper>1e10)] <- 1e10 #ggplot2 can't handle very large numbers
+
 p <- ggplot(sim1dat) + geom_smooth(aes(y=OR, x=diffs), se=FALSE) +
    geom_ribbon(aes(ymin=lower, ymax=upper, x=diffs, fill = "band"), alpha = 0.3) +
    xlab("P(Exposed | Case) - P(Exposed | Control)") + ylab("Estimated odds ratio")
