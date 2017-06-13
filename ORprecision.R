@@ -39,20 +39,20 @@ summary(unlist(lapply(dats, function(D) {sum(D$x[D$y==0])/sum(D$y==0)})))
 #######################################################################################
 # run simulation
 # plan: fix n, pCases, and cacoRatio in a few reasonable panels; then,
-# plot OR CI over range of differences in pCases-pControls
+# plot OR CI over range of pControls
 
 iter <- 250
-diffs <- seq(0,.90,by=.01)
+pControls <- seq(.05,.95,by=.02)
 sim1 <- list()
 
 n <- 300
 cacoRatio <- 2
 pCases <- .95
 set.seed(8675309)
-for (k in 1:length(diffs)) {
+for (k in 1:length(pControls)) {
    sim1[[k]] <- data.frame(OR=rep(0, iter), lower=0, upper=0, p=0)
    for (i in 1:iter) {
-      dat <- binSim(n, cacoRatio, pCases, pControls=pCases-diffs[k])
+      dat <- binSim(n, cacoRatio, pCases, pControls=pControls)
       fit <- glm(y ~ x, family=binomial, data=dat)
       tidyobj <- tidy(fit)[2,]
       tidyCI <- confint_tidy(fit)[2,]
