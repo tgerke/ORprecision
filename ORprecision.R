@@ -35,11 +35,17 @@ summary(unlist(lapply(dats, function(D) {sum(D$y==0)/sum(D$y==1)})))
 summary(unlist(lapply(dats, function(D) {sum(D$x[D$y==1])/sum(D$y==1)})))
 # check proportion of exposed in controls
 summary(unlist(lapply(dats, function(D) {sum(D$x[D$y==0])/sum(D$y==0)})))
+# check that estimated OR checks out 
+pCases <- .75
+pControls <- .25
+pCases/(1-pCases)/(pControls/(1-pControls))
+summary(unlist(lapply(dats, function(D) {
+   exp(coef(glm(y~x,family=binomial, data=D)))[2]})))
 
 #######################################################################################
 # run simulation
 # plan: fix n, pCases, and cacoRatio in a few reasonable panels; then,
-# plot OR CI over range of pControls
+# plot estimate CIs over range of pControls
 
 iter <- 250
 pControls <- seq(.05,.95,by=.02)
